@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>EvidencIA Saúde — Documentação</title>
+  <meta name="description" content="Documentação arquitetural, MLOps, Lean Inception, contratos de agentes e governança do projeto EvidencIA Saúde (Challenge 2 - UnB).">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="assets/custom.css">
+</head>
+<body>
+  <div id="app">Carregando documentação do EvidencIA Saúde...</div>
+
+  <script>
+    window.$docsify = {
+      name: 'EvidencIA Saúde',
+      repo: 'https://github.com/unb-Sistemas-de-Machine-learning/Challenge2_arial_12',
+      loadSidebar: true,
+      autoHeader: false,
+      subMaxLevel: 3,
+      auto2top: true,
+      relativePath: false,
+      homepage: 'README.md',
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: 'Pesquisar na documentação...',
+        noData: 'Nenhum resultado encontrado.',
+        depth: 4,
+        hideOtherSidebarContent: false
+      },
+      copyCode: {
+        buttonText: 'Copiar',
+        errorText: 'Erro ao copiar',
+        successText: 'Copiado!'
+      },
+      pagination: {
+        previousText: 'Anterior',
+        nextText: 'Próximo',
+        crossChapter: true,
+        crossChapterText: true
+      }
+    };
+  </script>
+
+  <!-- Docsify core -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <!-- Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-yaml.min.js"></script>
+</body>
+</html>
