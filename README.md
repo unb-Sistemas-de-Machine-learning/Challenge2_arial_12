@@ -29,6 +29,28 @@ uv sync --locked
 Crie o arquivo `.env` na raiz do repositório e coloque nele o conteúdo de
 `.env.example`.
 
+## Interface de consulta
+
+A interface em Streamlit fica em `src/ui/app.py`. Para abri-la, execute na raiz
+do repositório:
+
+```sh
+uv run streamlit run src/ui/app.py
+```
+
+Sem a variável `EVIDENCIA_API_URL`, a interface roda em **modo demonstração**:
+ela valida o formulário e mostra o JSON que seria enviado à API, mas não gera
+orientações. Quando a API estiver em execução, informe o endereço dela antes de
+abrir a interface:
+
+```powershell
+$env:EVIDENCIA_API_URL = "http://localhost:8000"   # PowerShell
+```
+
+```sh
+export EVIDENCIA_API_URL=http://localhost:8000     # Linux/macOS
+```
+
 ## Verificações locais
 
 O GitHub Actions roda as mesmas verificações em cada pull request.
