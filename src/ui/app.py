@@ -54,13 +54,11 @@ SELOS = {
 
 
 def secao_perfil() -> dict:
-    st.subheader("1. Seu perfil")
-    col_idade, col_gestante, col_lactante = st.columns([1, 1, 1])
-    idade = col_idade.number_input(
+    st.subheader("Seu perfil")
+    idade = st.number_input(
         "Idade (anos)", min_value=0, max_value=IDADE_MAX, value=30, step=1
     )
-    gestante = col_gestante.toggle("Estou gestante", key="gestante")
-    lactante = col_lactante.toggle("Estou amamentando", key="lactante")
+    gestante = st.toggle("Estou gestante", key="gestante")
 
     semanas = None
     if gestante:
@@ -72,15 +70,15 @@ def secao_perfil() -> dict:
             step=1,
             placeholder="Ex.: 20",
         )
+    lactante = st.toggle("Estou amamentando", key="lactante")
 
-    col_comorb, col_alerg = st.columns(2)
-    comorbidades = col_comorb.multiselect(
+    comorbidades = st.multiselect(
         "Condições de saúde (opcional)",
         options=list(COMORBIDADES),
         format_func=COMORBIDADES.get,
         placeholder="Selecione, se houver",
     )
-    alergias = col_alerg.multiselect(
+    alergias = st.multiselect(
         "Alergias conhecidas (opcional)",
         options=list(ALERGIAS),
         format_func=ALERGIAS.get,
@@ -97,18 +95,16 @@ def secao_perfil() -> dict:
 
 
 def secao_vacinas() -> list[VacinaTomada]:
-    st.subheader("2. Vacinas que você já tomou")
-    st.caption(
-        "Marque as vacinas que constam no seu cartão. Se não souber, deixe em branco."
-    )
+    st.subheader("Vacinas que você já tomou")
+    st.caption("Marque as que constam no seu cartão. Se não souber, deixe em branco.")
     tomadas: list[VacinaTomada] = []
     for chave, rotulo in VACINAS.items():
         marcada = st.checkbox(rotulo, key=f"vacina_{chave}")
         if not marcada:
             continue
-        col_doses, col_ano, _ = st.columns([1, 1, 2])
+        col_doses, col_ano = st.columns(2)
         doses = col_doses.number_input(
-            "Doses tomadas",
+            "Doses",
             min_value=1,
             max_value=10,
             value=1,
@@ -116,7 +112,7 @@ def secao_vacinas() -> list[VacinaTomada]:
             key=f"doses_{chave}",
         )
         ano = col_ano.number_input(
-            "Ano da última dose (opcional)",
+            "Última dose (ano)",
             min_value=ANO_DOSE_MIN,
             max_value=ANO_DOSE_MAX,
             value=None,
@@ -135,7 +131,7 @@ def secao_vacinas() -> list[VacinaTomada]:
 
 
 def secao_consulta() -> dict:
-    st.subheader("3. Sua dúvida")
+    st.subheader("Sua dúvida")
     relato = st.text_area(
         "Descreva seus sintomas ou sua dúvida",
         max_chars=RELATO_MAX,
@@ -203,8 +199,13 @@ def main() -> None:
             icon="ℹ️",
         )
 
-    perfil = secao_perfil()
-    vacinas = secao_vacinas()
+    # Perfil e vacinas ficam na barra lateral: são preenchidos uma vez e
+    # continuam ali enquanto a pessoa faz várias perguntas.
+    with st.sidebar:
+        perfil = secao_perfil()
+        st.divider()
+        vacinas = secao_vacinas()
+
     consulta = secao_consulta()
 
     if st.button("Consultar", type="primary", use_container_width=True):
