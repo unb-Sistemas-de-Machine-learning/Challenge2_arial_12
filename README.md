@@ -1,5 +1,60 @@
 # EvidencIA Saude
 
+O EvidencIA Saúde é um assistente de apoio à decisão em saúde baseado em
+evidências oficiais. Consulte a [documentação do projeto](docs/README.md) para
+conhecer o escopo e a arquitetura.
+
+## Estrutura do repositório
+
+| Diretório | Finalidade |
+| --- | --- |
+| `data/` | Dados usados pela ingestão e artefatos locais do RAG |
+| `src/rag/` | Ingestão, indexação e recuperação de documentos |
+| `src/agents/` | Agentes especialistas e orquestração |
+| `src/api/` | API REST |
+| `src/ui/` | Interface com o usuário |
+| `tests/` | Testes automatizados |
+
+## Configuração local
+
+Instale o [uv](https://docs.astral.sh/uv/getting-started/installation/) e execute
+na raiz do repositório. O uv usa o Python 3.12 indicado em `.python-version`
+e instala as dependências de desenvolvimento a partir do `uv.lock`.
+
+```sh
+uv python install
+uv sync --locked
+```
+
+O ambiente inicial funciona sem variáveis de aplicação. Quando precisar de
+configuração local, copie `.env.example` para `.env` e preencha as variáveis
+indicadas no modelo. O Git ignora o arquivo `.env`.
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Em shells POSIX:
+
+```sh
+cp .env.example .env
+```
+
+## Verificações locais
+
+O GitHub Actions roda as mesmas verificações em cada pull request.
+
+```sh
+uv run --no-sync ruff check .
+uv run --no-sync ruff format --check .
+uv run --no-sync pytest
+```
+
+Ao alterar dependências, inclua no mesmo pull request as mudanças em
+`pyproject.toml` e no `uv.lock`.
+
 ## Contribuidores
 
 <center>
