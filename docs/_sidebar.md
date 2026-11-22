@@ -10,5 +10,11 @@
   * [ADR-001: Arquitetura MLOps sob Custo Zero](/arquitetura/adr-001-arquitetura-mlops-mvp.md)
   * [Contrato JSON e Metadados do RAG](/arquitetura/contrato-json-e-metadados-rag.md)
 
+* **Agentes**
+  * [Prompts e Schemas dos Agentes](/agentes/prompts-e-schemas.md)
+
+* **Avaliação**
+  * [Golden Dataset de Casos Críticos](/avaliacao/golden-dataset.md)
+
 * **Governança e Ética**
   * [Riscos Clínicos, Viés, Ética e LGPD](/governanca/riscos-vies-etica-lgpd.md)
