@@ -138,3 +138,72 @@ usuario = renderizar_prompt(
 * Mudança de texto que não altera o schema: subir o *patch*/*minor* (`prompts-v1.0.1`, `prompts-v1.1.0`) editando `v1/`.
 * Mudança incompatível (novo schema ou nova estrutura de mensagens): criar a pasta `v2/` e manter `v1/` para reprodutibilidade dos experimentos.
 * Toda nova versão só é promovida após o benchmark no [Golden Dataset](/avaliacao/golden-dataset.md) atingir 100% nos casos críticos.
+
+---
+
+## 4. Execução do Agente Estruturador/Roteador (`#13`)
+
+| Artefato | Local no repositório |
+| :--- | :--- |
+| Agente | `src/agents/estruturador_roteador.py` (`estruturar_e_rotear`) |
+| Normalização determinística | `src/agents/normalizacao.py` |
+| Cliente de LLM | `src/agents/llm.py` |
+| Contrato repassado aos especialistas | `ContratoRoteado` em `src/agents/schemas.py` |
+| Avaliação no golden dataset | `src/eval/roteamento.py` |
+
+```python
+from src.agents.estruturador_roteador import estruturar_e_rotear
+
+contrato = estruturar_e_rotear(payload)  # dict ou EntradaConsulta
+contrato.roteamento.agentes_alvo  # especialistas a acionar
+contrato.roteamento.filtros_rag_recomendados
+```
+
+### 4.1. Fluxo
+
+1. Valida a entrada (`EntradaConsulta`); se ela não tiver `request_id`, o backend gera um UUID v4.
+2. Relato sem nenhuma palavra e sem campo estruturado preenchido é barrado **sem chamar o LLM** (`entrada_suficiente = false`).
+3. Uma chamada de *Structured Output* (`response_format` com o JSON Schema de `SaidaEstruturadorRoteador`, temperatura 0). Os dados do usuário vão só na mensagem de usuário, e o `request_id` não é enviado ao LLM.
+4. Se a resposta não for JSON válido ou violar o schema (por exemplo, rota incoerente com `agentes_alvo`), o agente faz **uma nova tentativa** mostrando ao modelo a lista de erros.
+5. **Consolidação determinística** sobre a saída do LLM:
+   * as entidades do formulário (`medicamento_consultado`, `vacina_consultada`, `suspeita_doenca`) entram mesmo que o LLM as esqueça;
+   * nomes comerciais, siglas e grafias são convertidos para as chaves do contrato (`Advil` → `ibuprofeno`, `AAS` → `acido_acetilsalicilico`, `dTpa` → `dtpa`, `Febre amarela` → `febre_amarela`);
+   * os filtros do RAG recebem as categorias e seções de cada especialista acionado e o `publico_alvo` derivado do perfil (`geral`, faixa etária, `gestante`, `lactante`, `imunossuprimido`) e da suspeita (`pacientes_com_dengue` etc.);
+   * os filtros sugeridos pelo LLM são descartados: na avaliação, ele chegou a incluir `gestante` para quem não está grávida e categorias de vacina sem vacina na consulta;
+   * na rota `hibrida`, a triagem vacinal só é acionada se houver alguma vacina nas entidades (na avaliação, "dengue + dipirona" chegou a acionar os dois especialistas);
+   * a rota `fora_de_escopo` fica sem filtros, porque não há busca no RAG.
+6. ***Fail-safe*:** se as duas tentativas falharem, a saída é `fora_de_escopo` com `entrada_suficiente = false` e `motivo_insuficiencia` padronizado (`execucao.fallback_seguranca = true`).
+7. Provedor de LLM indisponível (rede, HTTP 4xx/5xx, limite de taxa esgotado) levanta `ErroLLM`, que a API (`#21`) traduz para `503 SERVICO_INDISPONIVEL`.
+
+### 4.2. Contrato repassado aos especialistas (`ContratoRoteado`)
+
+| Campo | Conteúdo |
+| :--- | :--- |
+| `request_id` | UUID da requisição, igual a `roteamento.request_id`. |
+| `entrada` | `EntradaConsulta` validada: perfil, vacinas tomadas e relato. |
+| `roteamento` | `SaidaEstruturadorRoteador` consolidada: rota, agentes, entidades (vacinas questionadas, medicamentos, sintomas e suspeita) e filtros do RAG. |
+| `execucao` | `modelo_llm`, `versao_prompt`, `latencia_ms`, `tentativas_llm`, `fallback_seguranca`. |
+
+Os especialistas (`#15`/`#16`) usam `contrato.entrada` como `entrada_json` e `contrato.roteamento` como `roteamento_json`.
+
+### 4.3. Log de execução
+
+Cada execução grava **uma linha JSON** no logger `src.agents.estruturador_roteador` (evento `roteamento_concluido`). A linha traz `request_id`, `origem_entrada`, rota, agentes, `dentro_do_escopo_mvp`, `entrada_suficiente`, a quantidade de entidades por tipo e os campos de `execucao`. O mesmo dicionário fica em `record.registro_execucao`, para a API e o MLflow (`#20`) o consumirem. Saídas inválidas geram `roteamento_saida_invalida` (WARNING) e falhas do provedor geram `roteamento_erro_llm` (ERROR). **O relato e os dados do perfil nunca vão para o log** (LGPD).
+
+### 4.4. Configuração do LLM
+
+O padrão é o plano gratuito do **Groq** (`openai/gpt-oss-20b`), por meio de um cliente HTTP compatível com a API de Chat Completions da OpenAI. Para trocar de provedor (Ollama local, Gemini, OpenRouter...), basta mudar `EVIDENCIA_LLM_BASE_URL`, `EVIDENCIA_LLM_MODELO` e a chave (veja o `.env.example`). Modelos sem suporte a JSON Schema usam `EVIDENCIA_LLM_MODO_JSON=json_object`; a validação Pydantic continua valendo.
+
+### 4.5. Avaliação do roteamento
+
+```sh
+uv run --env-file .env python -m src.eval.roteamento --saida data/avaliacoes/roteamento.json
+```
+
+Para cada caso do [Golden Dataset](/avaliacao/golden-dataset.md), o script confere se a rota está em `rotas_aceitas` e se `agentes_alvo` é igual a `agentes_esperados`, e informa o acerto geral, o acerto nos casos críticos, os *fallbacks* e a latência média.
+
+No plano gratuito do Groq, o limite de tokens por minuto do `openai/gpt-oss-20b` (8 mil TPM, com cerca de 4,5 mil por chamada) exige `--pausa 20` para rodar os 19 casos sem erro HTTP 429. Quando o limite estoura, o cliente espera o tempo que o provedor sugere e tenta de novo, até 6 vezes.
+
+| Data | Modelo | `VERSAO_PROMPTS` | Golden | Rota + agentes | Casos críticos | *Fallbacks* | Latência média |
+| :--- | :--- | :--- | :--- | :-: | :-: | :-: | :-: |
+| 25/11/2026 | `openai/gpt-oss-20b` (Groq) | `prompts-v1.0.0` | `golden-v2.0.0` | 19/19 | 9/9 | 0 | 4,9 s |
