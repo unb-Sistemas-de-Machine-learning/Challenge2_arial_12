@@ -8,7 +8,7 @@ O **golden dataset** é a bateria fixa de casos críticos usada para avaliar o E
 | Modelos e carga (`carregar_golden_dataset()`) | `src/eval/golden_dataset.py` |
 | Testes de estrutura e cobertura | `tests/eval/test_golden_dataset.py` |
 
-> **Status atual:** `golden-v1.0.0`, `rascunho_para_revisao`. Os fatos clínicos foram conferidos em fontes do Ministério da Saúde e em bulas registradas na Anvisa, mas o gabarito só passa a `revisado` após revisão humana do `R3` (*human-in-the-loop*, ver [ADR-001](/arquitetura/adr-001-arquitetura-mlops-mvp.md)).
+> **Status atual:** `golden-v2.0.0`, `rascunho_para_revisao`. Os fatos clínicos foram conferidos em fontes do Ministério da Saúde e em bulas registradas na Anvisa, mas o gabarito só passa a `revisado` após revisão humana do `R3` (*human-in-the-loop*, ver [ADR-001](/arquitetura/adr-001-arquitetura-mlops-mvp.md)).
 
 ---
 
@@ -140,4 +140,10 @@ Registrar no MLflow, junto das métricas, `versao_dataset`, `VERSAO_PROMPTS` e a
 | Caso | Pendência |
 | :-- | :-- |
 | GD-16 | Conferir a lista de sinais de malária grave no Quadro 1 da 3ª edição do Guia de Tratamento da Malária (confirmada em material oficial anterior). |
-| Catálogo | Confirmar o título exato da Nota Técnica Conjunta nº 11/2024 e as bulas específicas que a `#11` vai ingerir. |
+
+### 4.2. Histórico de versões
+
+| Versão | Data | Mudança |
+| :-- | :-- | :-- |
+| `golden-v2.0.0` | 25/11/2026 | GD-03: a fonte esperada `DOC-MS-NT-VACINA-DENGUE` foi trocada por `DOC-MS-CALENDARIO-2026` (seção `contraindicacoes`), porque a NT Conjunta nº 11/2024 trata só de lactantes e não menciona gestantes. GD-09: a afirmação-chave da bula do paracetamol (agora a bula do Tylenol) passou a ser a advertência de não exceder a dose recomendada, porque a posologia com o limite de 4.000 mg não é indexada; o limite continua na fonte do protocolo de dengue. Títulos e URLs do catálogo sincronizados com `data/catalogo_fontes.toml` (issue `#11`). |
+| `golden-v1.0.0` | 22/11/2026 | Versão inicial (issue `#24`). |

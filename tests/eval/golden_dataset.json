@@ -1,7 +1,7 @@
 {
-  "versao_dataset": "golden-v1.0.0",
+  "versao_dataset": "golden-v2.0.0",
   "status": "rascunho_para_revisao",
-  "data_atualizacao": "2026-11-22",
+  "data_atualizacao": "2026-11-25",
   "referencia_contrato": "docs/arquitetura/contrato-json-e-metadados-rag.md",
   "descricao": "Casos críticos de validação do EvidencIA Saúde, derivados das jornadas da Lean Inception (Mariana e Pedro). Cada caso traz uma entrada válida do contrato (Seção 3) e o gabarito com selo de risco esperado e fonte oficial (Anvisa/MS) para o benchmark da issue #18. O campo afirmacao_chave descreve o que a fonte precisa sustentar; não é citação literal. Requer revisão humana do R3 antes de ser marcado como revisado.",
   "documentos_referencia": [
@@ -11,54 +11,54 @@
       "titulo_documento": "Instrução Normativa do Calendário Nacional de Vacinação 2026",
       "categoria": "calendario_vacinal",
       "url_referencia": "https://www.gov.br/saude/pt-br/vacinacao/publicacoes/instrucao-normativa-que-instrui-o-calendario-nacional-de-vacinacao-2026.pdf",
-      "observacao": "Cobre o calendário da gestante (dTpa, dT, hepatite B, influenza, VSR) e a contraindicação da vacina febre amarela na gestação."
+      "observacao": "Cobre o calendário da gestante (dTpa, dT, hepatite B, influenza, VSR) e as contraindicações das vacinas febre amarela e dengue na gestação."
     },
     {
       "doc_id": "DOC-MS-NT-VACINA-DENGUE",
       "orgao_emissor": "MINISTERIO_DA_SAUDE",
-      "titulo_documento": "Nota Técnica Conjunta nº 11/2024-CGICI/DPNI/SVSA/MS (vacina dengue atenuada)",
+      "titulo_documento": "Nota Técnica Conjunta nº 11/2024-CGICI/DPNI/SVSA/MS (vacina dengue e amamentação)",
       "categoria": "nota_tecnica",
       "url_referencia": "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2024/nota-tecnica-conjunta-no-11-2024-cgici-dpni-svsa-ms",
-      "observacao": "Título exato a confirmar na ingestão (#11). O FAQ oficial do MS sobre a vacina dengue também lista gestantes e lactantes entre quem não deve receber a vacina."
+      "observacao": "Trata da vacinação de lactantes (suspensão do aleitamento por 15 dias após a dose). Não menciona gestantes."
     },
     {
       "doc_id": "DOC-ANVISA-BULA-VACINA-DENGUE",
       "orgao_emissor": "ANVISA",
-      "titulo_documento": "Bula - Vacina dengue (atenuada)",
+      "titulo_documento": "Bula do paciente - Qdenga (vacina dengue 1, 2, 3 e 4 atenuada)",
       "categoria": "bula_vacina",
-      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/",
-      "observacao": "Bula registrada no Bulário Eletrônico da Anvisa."
+      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=126270010",
+      "observacao": "Bula do paciente da Qdenga (Takeda), registro 1.2627.0010, no Bulário Eletrônico da Anvisa."
     },
     {
       "doc_id": "DOC-ANVISA-BULA-IBUPROFENO",
       "orgao_emissor": "ANVISA",
-      "titulo_documento": "Bula do paciente - Ibuprofeno",
+      "titulo_documento": "Bula do paciente - Ibuprofeno 600 mg (cápsula gelatinosa mole)",
       "categoria": "bula_medicamento",
-      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/",
+      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=105350230",
       "observacao": "Bula registrada no Bulário Eletrônico da Anvisa."
     },
     {
       "doc_id": "DOC-ANVISA-BULA-AAS",
       "orgao_emissor": "ANVISA",
-      "titulo_documento": "Bula do paciente - Ácido acetilsalicílico",
+      "titulo_documento": "Bula do paciente - Ácido acetilsalicílico 100 mg (comprimido revestido)",
       "categoria": "bula_medicamento",
-      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/",
+      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=100431468",
       "observacao": "Bula registrada no Bulário Eletrônico da Anvisa."
     },
     {
       "doc_id": "DOC-ANVISA-BULA-DIPIRONA",
       "orgao_emissor": "ANVISA",
-      "titulo_documento": "Bula do paciente - Dipirona",
+      "titulo_documento": "Bula do paciente - Dipirona monoidratada 50 mg/mL (solução oral)",
       "categoria": "bula_medicamento",
-      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/",
+      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=183260244",
       "observacao": "Bula registrada no Bulário Eletrônico da Anvisa."
     },
     {
       "doc_id": "DOC-ANVISA-BULA-PARACETAMOL",
       "orgao_emissor": "ANVISA",
-      "titulo_documento": "Bula do paciente - Paracetamol",
+      "titulo_documento": "Bula do paciente - Tylenol (paracetamol) 500 mg e 750 mg (comprimido revestido)",
       "categoria": "bula_medicamento",
-      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/",
+      "url_referencia": "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=157211214",
       "observacao": "Bula registrada no Bulário Eletrônico da Anvisa."
     },
     {
@@ -219,9 +219,9 @@
             "afirmacao_chave": "A vacina dengue (atenuada) contém vírus vivos atenuados e é contraindicada durante a gestação."
           },
           {
-            "doc_id": "DOC-MS-NT-VACINA-DENGUE",
+            "doc_id": "DOC-MS-CALENDARIO-2026",
             "secao": "contraindicacoes",
-            "afirmacao_chave": "Gestantes e lactantes não devem receber a vacina dengue (atenuada) ofertada pelo SUS."
+            "afirmacao_chave": "Mulheres grávidas ou em período de amamentação (lactantes) estão entre as contraindicações da vacina dengue."
           }
         ],
         "condutas_esperadas": [
@@ -571,7 +571,7 @@
           {
             "doc_id": "DOC-ANVISA-BULA-PARACETAMOL",
             "secao": "advertencias_e_precaucoes",
-            "afirmacao_chave": "A dose máxima diária de paracetamol para adultos é de 4.000 mg; doses acima da recomendada podem causar lesão no fígado."
+            "afirmacao_chave": "Não se deve tomar mais do que a dose recomendada, pois pode causar sérios problemas de saúde, nem usar outro produto que contenha paracetamol."
           }
         ],
         "condutas_esperadas": [
