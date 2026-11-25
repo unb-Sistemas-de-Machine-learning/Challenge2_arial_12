@@ -2,7 +2,7 @@
 
 Este documento especifica formalmente o **esquema de metadados obrigatórios da base vetorial (RAG)** e os **contratos JSON de entrada, comunicação interna entre agentes, saída da API REST e coleta de feedback** do projeto **EvidencIA Saúde**.
 
-O objetivo é padronizar a fronteira entre dados, inteligência (RAG + multiagentes), backend, interface e observabilidade, destravando o desenvolvimento paralelo das issues **`#11`**, **`#12`** e **`#24`**.
+O objetivo é padronizar a fronteira entre dados, inteligência (RAG + multiagentes), backend, interface e observabilidade, destravando o desenvolvimento paralelo das issues listadas na Seção 1.
 
 ---
 
@@ -10,9 +10,12 @@ O objetivo é padronizar a fronteira entre dados, inteligência (RAG + multiagen
 
 | Issue | Frente de Trabalho | Papel Principal | Seções deste Documento que a Destravam |
 | :-: | :--- | :---: | :--- |
-| **`#11`** | Ingestão documental (Anvisa/MS), *chunking* e indexação na Base Vetorial local | `R4` (Eng. de Dados) + `R3` | [Seção 2 — Esquema de Metadados Obrigatórios do RAG](#metadados-rag) |
-| **`#12`** | Motor RAG, Agente Estruturador, Orquestrador e Agentes Especialistas | `R3` (Cientista de Dados) + `R2` | [Seções 2, 3, 4 e 5](#contrato-entrada) |
-| **`#24`** | API REST em Docker, Painel Streamlit, ciclo de feedback e telemetria | `R5` (Eng. de Software) + `R6`/`R7` | [Seções 3, 5, 6 e 7](#contrato-saida) |
+| **`#11`** / **`#14`** | Ingestão documental (Anvisa/MS), *chunking*, indexação e motor de recuperação com filtro por metadados | `R4` (Eng. de Dados) + `R3` | [Seção 2 — Esquema de Metadados Obrigatórios do RAG](#metadados-rag) |
+| **`#12`** | Interface unificada de consulta (Streamlit) | `R5` (Eng. de Software) | [Seções 3 e 5](#contrato-entrada) |
+| **`#13`** | Agente Estruturador e Roteador | `R3` (Cientista de Dados) + `R2` | [Seções 3 e 4.1](#contrato-entrada) |
+| **`#15`** / **`#16`** | Agentes especialistas de Triagem Vacinal e de Medicamentos e Condutas | `R3` (Cientista de Dados) + `R2` | [Seções 2, 4.2 e 5](#contrato-saida) |
+| **`#19`** / **`#21`** / **`#22`** | *Guardrails*, API REST em Docker, feedback e telemetria | `R5` (Eng. de Software) + `R6`/`R7` | [Seções 3, 5, 6 e 7](#contrato-saida) |
+| **`#24`** | Golden dataset de casos críticos e especificação de prompts e schemas dos agentes | `R3` (Cientista de Dados) | [Seções 3, 4 e 5](#contrato-saida) — ver também [Prompts e Schemas](/agentes/prompts-e-schemas.md) e [Golden Dataset](/avaliacao/golden-dataset.md) |
 
 ---
 
@@ -102,7 +105,7 @@ O script de ingestão (`#11`) e o workflow de CI no GitHub Actions devem rejeita
 
 ## 3. Contrato JSON de Entrada (`POST /api/v1/consultar`) :id=contrato-entrada
 
-Este é o payload enviado pela interface **Streamlit** (`#24`) à **API REST**, recebido pelo **Agente Estruturador/Multimodal** (`#12`).
+Este é o payload enviado pela interface **Streamlit** (`#12`) à **API REST** (`#21`), recebido pelo **Agente Estruturador/Roteador** (`#13`). Schema Pydantic correspondente: `EntradaConsulta` em `src/agents/schemas.py`.
 
 > **Regra de Privacidade (LGPD):** O contrato **não aceita e não define** campos de identificação pessoal (nome, CPF, e-mail, telefone, endereço ou cartão SUS). O `request_id` é um UUID efêmero gerado apenas para correlação técnica e vinculação anônima de feedback.
 
@@ -187,22 +190,27 @@ Este é o payload enviado pela interface **Streamlit** (`#24`) à **API REST**, 
 
 ---
 
-## 4. Contrato Interno de Orquestração Multiagentes *(Issue `#12`)*
+## 4. Contrato Interno de Orquestração Multiagentes *(Issues `#13`, `#15` e `#16`)*
 
-Para manter baixo acoplamento entre os agentes definidos no Cluster 2 da *Lean Inception*, o fluxo interno segue dois envelopes internos padronizados:
+O sistema tem **3 agentes**, definidos no Cluster 2 da *Lean Inception* e nas issues do Épico 4:
 
-### 4.1. Saída do Agente Estruturador / Orquestrador *(Roteamento)*
+| ID do agente | Issue | Papel |
+| :--- | :-: | :--- |
+| `agente_estruturador_roteador` | `#13` | Normaliza a entrada (tabular + texto), verifica o escopo e define rota e filtros do RAG. |
+| `agente_triagem_vacinal` | `#15` | Triagem vacinal e segurança na gestação. |
+| `agente_medicamentos_condutas` | `#16` | Medicamento × doença × perfil, condutas seguras e sinais de alarme. |
 
-O **Agente Estruturador/Multimodal** normaliza os dados tabulares + relato textual e o **Agente Orquestrador** define a rota e os filtros de metadados para o RAG:
+Para manter baixo acoplamento, o fluxo interno segue dois envelopes padronizados. Os schemas Pydantic e os prompts de cada agente estão em [Especificação dos Agentes: Prompts e Schemas](/agentes/prompts-e-schemas.md).
+
+### 4.1. Saída do Agente Estruturador/Roteador *(Roteamento)*
+
+O **Agente Estruturador/Roteador** normaliza os dados tabulares + relato textual e define a rota e os filtros de metadados para o RAG (schema `SaidaEstruturadorRoteador`):
 
 ```json
 {
   "request_id": "2c8a4f90-1e33-4a9b-8f12-0d7c3e9a5b44",
   "rota_definida": "hibrida",
-  "agentes_alvo": [
-    "agente_interacao_medicamentosa",
-    "agente_condutas_doencas"
-  ],
+  "agentes_alvo": ["agente_medicamentos_condutas"],
   "entidades_normalizadas": {
     "medicamentos_dcb": ["ibuprofeno"],
     "vacinas": [],
@@ -214,33 +222,44 @@ O **Agente Estruturador/Multimodal** normaliza os dados tabulares + relato textu
     "secoes_prioritarias": ["contraindicacoes", "manejo_clinico", "sinais_de_alarme"],
     "publico_alvo": ["geral", "adulto", "pacientes_com_dengue"]
   },
-  "dentro_do_escopo_mvp": true
+  "dentro_do_escopo_mvp": true,
+  "entrada_suficiente": true,
+  "motivo_insuficiencia": null
 }
 ```
 
 **Valores válidos para `rota_definida`:**
-* `"triagem_vacinal"` → aciona `agente_imunizacao`
-* `"interacao_medicamentosa"` → aciona `agente_interacao_medicamentosa`
-* `"condutas_doenca"` → aciona `agente_condutas_doencas`
-* `"hibrida"` → aciona combinação de especialistas (ex.: interação medicamentosa + condutas em doenças)
-* `"fora_de_escopo"` → aciona resposta segura explicando o recorte atual do MVP e orientando atendimento médico/UBS
+* `"triagem_vacinal"` → aciona `agente_triagem_vacinal`
+* `"interacao_medicamentosa"` → aciona `agente_medicamentos_condutas`
+* `"condutas_doenca"` → aciona `agente_medicamentos_condutas`
+* `"hibrida"` → aciona um ou ambos os especialistas (ex.: medicamento + conduta na mesma consulta, ou vacina + medicamento)
+* `"fora_de_escopo"` → não aciona especialistas; resposta segura explicando o recorte atual do MVP e orientando atendimento médico/UBS
+
+Quando o relato é incompreensível ou não traz dúvida identificável, o agente devolve `entrada_suficiente: false`, explica em `motivo_insuficiencia` e usa a rota `fora_de_escopo`.
 
 ### 4.2. Envelope de Retorno de Cada Agente Especialista
 
-Cada agente especialista devolve ao consolidador um objeto com o mesmo formato estrutural:
+Cada agente especialista devolve ao consolidador um objeto com o mesmo formato estrutural (schemas `SaidaTriagemVacinal` e `SaidaMedicamentosCondutas`):
 
 ```json
 {
-  "agente_origem": "agente_interacao_medicamentosa",
+  "agente_origem": "agente_medicamentos_condutas",
   "classificacao_parcial": "ALERTA_RISCO_GRAVE",
   "achados_estruturados": {
     "medicamento_avaliado": "Ibuprofeno",
     "doenca_ou_condicao_contexto": "Suspeita de dengue",
     "status_uso": "CONTRAINDICADO",
+    "condutas_seguras": [
+      "Não utilizar anti-inflamatórios não esteroidais nem ácido acetilsalicílico.",
+      "Iniciar hidratação oral e procurar avaliação em unidade de saúde."
+    ],
+    "sinais_de_alarme": ["Dor abdominal intensa e contínua", "Vômitos persistentes"],
+    "evidencia_ids": ["EV-01"],
     "resumo_agente": "Ibuprofeno é um anti-inflamatório não esteroidal (AINE) contraindicado em suspeita de dengue devido ao risco aumentado de hemorragias."
   },
   "evidencias_recuperadas": [
     {
+      "evidencia_id": "EV-01",
       "chunk_id": "ms-dengue-6ed-manejo-aines-01",
       "orgao_emissor": "MINISTERIO_DA_SAUDE",
       "titulo_documento": "Dengue: Diagnóstico e Manejo Clínico - Adulto e Criança (6ª edição)",
@@ -256,7 +275,7 @@ Cada agente especialista devolve ao consolidador um objeto com o mesmo formato e
 
 ---
 
-## 5. Contrato JSON de Saída (`200 OK` — Issues `#12` e `#24`) :id=contrato-saida
+## 5. Contrato JSON de Saída (`200 OK` — Issues `#19` e `#21`) :id=contrato-saida
 
 Este é o payload consolidado devolvido pela API REST ao Painel **Streamlit**.
 
@@ -267,7 +286,7 @@ Este é o payload consolidado devolvido pela API REST ao Painel **Streamlit**.
 | `request_id` | `string` (UUID v4) | **Sim** | Mesmo UUID da entrada | Permite correlacionar a etapa de feedback posterior (`POST /api/v1/feedback`). |
 | `timestamp_resposta` | `string` (ISO 8601 UTC) | **Sim** | Ex.: `"2026-11-19T20:30:00Z"` | Data e hora da geração da resposta. |
 | `rota_acionada` | `string` (enum) | **Sim** | `"triagem_vacinal"`, `"interacao_medicamentosa"`, `"condutas_doenca"`, `"hibrida"`, `"fora_de_escopo"`, `"evidencia_insuficiente"` | Rota efetivamente executada pelo Orquestrador. |
-| `agentes_executados` | `array<string>` | **Sim** | Ex.: `["estruturador", "orquestrador", "agente_imunizacao"]` | Rastreabilidade dos agentes participantes da resposta. |
+| `agentes_executados` | `array<string>` | **Sim** | Ex.: `["agente_estruturador_roteador", "agente_triagem_vacinal"]` | Rastreabilidade dos agentes participantes da resposta. |
 | `classificacao_risco` | `string` (enum) | **Sim** | `"INDICADA"`, `"CONTRAINDICADA"`, `"ALERTA_RISCO_GRAVE"`, `"ORIENTACAO_GERAL"`, `"EVIDENCIA_INSUFICIENTE"` | Selo visual principal exibido em destaque no card do Streamlit. |
 | `resumo_decisao` | `string` | **Sim** | Texto claro e acessível ao cidadão | Síntese direta da orientação fundamentada nas evidências. |
 | `detalhamento_vacinal` | `object` ou `null` | Condicional | Preenchido nas rotas `triagem_vacinal` ou `hibrida` | Detalha vacinas em dia e lista de vacinas pendentes com status individual (`INDICADA`, `CONTRAINDICADA`, `AVALIAR_COM_MEDICO`) e `evidencia_ids`. |
@@ -278,7 +297,7 @@ Este é o payload consolidado devolvido pela API REST ao Painel **Streamlit**.
 
 ### 5.2. Invariantes de Segurança (*Guardrails* Obrigatórios)
 
-A camada de validação da API REST (`#24`) e dos agentes (`#12`) deve impor três invariantes inegociáveis antes de serializar qualquer resposta `200 OK`:
+A camada de validação da API REST (`#19`/`#21`) e dos agentes (`#13`, `#15` e `#16`) deve impor três invariantes inegociáveis antes de serializar qualquer resposta `200 OK`:
 
 1. **Regra Anti-Alucinação (*Zero Evidence, Zero Recommendation*):** se `evidencias_oficiais` estiver vazio ou nenhum trecho atingir o limiar mínimo de similaridade definido no MLflow, a API **bloqueia** qualquer recomendação gerada pelo LLM, força `classificacao_risco = "EVIDENCIA_INSUFICIENTE"` e `rota_acionada = "evidencia_insuficiente"`, retornando mensagem padronizada de encaminhamento a profissional de saúde.
 2. **Precedência Máxima de Severidade:** quando múltiplos agentes retornam achados distintos em uma mesma consulta (ex.: uma vacina indicada e outra contraindicada na gestação), o campo global `classificacao_risco` deve refletir sempre a maior severidade observada, segundo a ordem:  
@@ -295,9 +314,8 @@ A camada de validação da API REST (`#24`) e dos agentes (`#12`) deve impor tr�
   "timestamp_resposta": "2026-11-19T20:32:10Z",
   "rota_acionada": "triagem_vacinal",
   "agentes_executados": [
-    "agente_estruturador",
-    "agente_orquestrador",
-    "agente_imunizacao"
+    "agente_estruturador_roteador",
+    "agente_triagem_vacinal"
   ],
   "classificacao_risco": "CONTRAINDICADA",
   "resumo_decisao": "Para gestantes com 20 semanas, a vacina dTpa é INDICADA a cada gestação. Contudo, vacinas de vírus vivo atenuado consultadas (como a vacina da dengue) são CONTRAINDICADAS na gestação, e a vacina da febre amarela é geralmente contraindicada, exigindo avaliação médica individualizada apenas em cenários de alto risco epidemiológico.",
@@ -379,10 +397,8 @@ A camada de validação da API REST (`#24`) e dos agentes (`#12`) deve impor tr�
   "timestamp_resposta": "2026-11-19T20:35:04Z",
   "rota_acionada": "hibrida",
   "agentes_executados": [
-    "agente_estruturador",
-    "agente_orquestrador",
-    "agente_interacao_medicamentosa",
-    "agente_condutas_doencas"
+    "agente_estruturador_roteador",
+    "agente_medicamentos_condutas"
   ],
   "classificacao_risco": "ALERTA_RISCO_GRAVE",
   "resumo_decisao": "ALERTA DE RISCO GRAVE: Não tome Ibuprofeno diante de suspeita de dengue. Anti-inflamatórios não esteroidais (AINEs) são contraindicados na dengue por aumentarem o risco de hemorragias e agravamento clínico. Priorize hidratação oral vigorosa, repouso e avaliação médica em unidade de saúde.",
@@ -445,7 +461,7 @@ A camada de validação da API REST (`#24`) e dos agentes (`#12`) deve impor tr�
   "request_id": "7a1d5e88-90c4-4b21-b811-44fe22aa9900",
   "timestamp_resposta": "2026-11-19T20:40:12Z",
   "rota_acionada": "evidencia_insuficiente",
-  "agentes_executados": ["agente_estruturador", "agente_orquestrador"],
+  "agentes_executados": ["agente_estruturador_roteador"],
   "classificacao_risco": "EVIDENCIA_INSUFICIENTE",
   "resumo_decisao": "Não foram encontradas evidências oficiais suficientes na base atual do EvidencIA Saúde (Anvisa e Ministério da Saúde) para responder com segurança à sua consulta. Para evitar orientações imprecisas, o sistema não emite recomendações sem respaldo documental oficial. Procure orientação de um médico, farmacêutico ou unidade de saúde.",
   "detalhamento_vacinal": null,
@@ -497,7 +513,7 @@ Conecta a **Etapa 6 das Jornadas** (Mariana e Pedro) ao monitoramento em produç
 
 ## 7. Endpoints Auxiliares e Contrato Padronizado de Erros
 
-### 7.1. Endpoints da API REST (`#24`)
+### 7.1. Endpoints da API REST (`#21`)
 
 | Método | Rota | Finalidade | Consumidor Principal |
 | :-: | :--- | :--- | :--- |

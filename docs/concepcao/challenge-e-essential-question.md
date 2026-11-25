@@ -69,9 +69,9 @@ O planejamento do projeto segue o cronograma oficial de 6 semanas até a entrega
 | :-: | :--- | :--- | :--- | :--- |
 | **1** | 26/10 – 01/11 | Problema, stakeholders, riscos e métricas | Definições do projeto | Lean Inception, Essential Question, Papéis (R1–R7), ADR-001, Contratos JSON/RAG e Documento de Riscos, Viés e LGPD. |
 | **2** | 02/11 – 08/11 | Base de conhecimento, recuperação e comparação LLM × RAG | Primeiro mecanismo RAG + respostas baseadas em evidências | Ingestão batch Anvisa/MS com metadados obrigatórios (`#11`), base vetorial local e benchmark LLM puro × RAG no MLflow. |
-| **3** | 09/11 – 15/11 | Sistema multiagentes | Primeiro sistema multiagentes | Orquestrador + Agente de Imunização + Agente de Medicamentos e Condutas respeitando o contrato JSON (`#12`). |
+| **3** | 09/11 – 15/11 | Sistema multiagentes | Primeiro sistema multiagentes | Agente Estruturador/Roteador + Agente de Triagem Vacinal + Agente de Medicamentos e Condutas respeitando o contrato JSON (`#13`–`#16`). |
 | **4** | 16/11 – 22/11 | Multimodalidade | Agentes multimodais | Agente Estruturador/Multimodal unificando entradas estruturadas (perfil + checklist vacinal) e não estruturadas (relato textual), preparado para evolução futura (OCR/ASR). |
-| **5** | 23/11 – 29/11 | Integração completa | Aplicação funcional | API REST em Docker + Painel Streamlit + MLflow Registry + Prometheus/Grafana + ciclo de feedback (`#24`). |
+| **5** | 23/11 – 29/11 | Integração completa | Aplicação funcional | API REST em Docker + Painel Streamlit + MLflow Registry + Prometheus/Grafana + ciclo de feedback (`#20`, `#21` e `#22`). |
 | **6** | 30/11 – 06/12 | Testes e refinamento | Relatório final + apresentação | Validação ponta a ponta das jornadas da Mariana e do Pedro, auditoria de 100% em casos críticos de contraindicação e consolidação do relatório. |
 | **Entrega** | **07/12** | **Entrega final** | **Aplicação, relatório e apresentação** | Demonstração funcional completa sob custo zero (R$ 0,00), código versionado e documentação publicada. |
 
