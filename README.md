@@ -51,6 +51,18 @@ $env:EVIDENCIA_API_URL = "http://localhost:8000"   # PowerShell
 export EVIDENCIA_API_URL=http://localhost:8000     # Linux/macOS
 ```
 
+## Agente Estruturador e Roteador
+
+O agente de entrada (`src/agents/estruturador_roteador.py`) usa um LLM
+compatível com a API da OpenAI; o padrão é o plano gratuito do Groq. Coloque a
+chave em `GROQ_API_KEY` no `.env` e avalie o roteamento no golden dataset:
+
+```sh
+uv run --env-file .env python -m src.eval.roteamento
+```
+
+Detalhes em [Prompts e Schemas dos Agentes](docs/agentes/prompts-e-schemas.md).
+
 ## Verificações locais
 
 O GitHub Actions roda as mesmas verificações em cada pull request.
