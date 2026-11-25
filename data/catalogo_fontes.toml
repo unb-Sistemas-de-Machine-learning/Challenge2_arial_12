@@ -1,0 +1,359 @@
+# Catálogo das fontes oficiais do corpus do EvidencIA Saúde (issue #11).
+#
+# Cada entrada descreve um PDF de data/raw/. O pipeline de ingestão confere o
+# sha256, processa apenas as páginas listadas em `paginas` e anexa a cada chunk
+# os metadados abaixo (Seção 2 de docs/arquitetura/contrato-json-e-metadados-rag.md).
+# Os `doc_id` são os mesmos de `documentos_referencia` no golden dataset.
+# A ficha descritiva do corpus está em docs/data_card.md.
+
+versao_corpus = "corpus-v1.0.0"
+
+# --- Jornada da Mariana: vacinação adulto/gestante ---------------------------
+
+[[fontes]]
+doc_id = "DOC-MS-CALENDARIO-2026"
+slug = "ms-calendario-2026"
+arquivo = "ms-calendario-vacinacao-2026.pdf"
+sha256 = "3395abd5bc0659aec19149a3f6df815ceeebb58f81ebbc125e73daba3f290fc8"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Instrução Normativa do Calendário Nacional de Vacinação 2026"
+categoria = "calendario_vacinal"
+jornada = "mariana"
+entidade_principal = "calendario_vacinal"
+publico_alvo = ["adulto"]
+data_publicacao = "2026-10"
+url_referencia = "https://www.gov.br/saude/pt-br/vacinacao/publicacoes/instrucao-normativa-que-instrui-o-calendario-nacional-de-vacinacao-2026.pdf"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Instrução Normativa do ano corrente; o rodapé informa atualização em 08/10/2026 pela CGICI/DPNI/SVSA."
+# Vacinas do adulto e da gestante: dTpa, VSR e hepatite B (2-8); influenza,
+# covid-19 e febre amarela (25-35); tríplice viral (37-39); dengue, dT e
+# informações gerais (50-60). Seções infantis (BCG, VIP, rotavírus etc.) ficam de fora.
+paginas = [[2, 8], [25, 35], [37, 39], [50, 60]]
+# Texto entre o nome da vacina e o primeiro subtítulo.
+secao_padrao = "esquema_vacinal"
+
+# Entidade de cada vacina, pelo título "N. Vacina ..." (vale a primeira regra).
+[[fontes.regras_entidade]]
+padrao = "\\bdTpa\\b"
+entidade = "dtpa"
+
+[[fontes.regras_entidade]]
+padrao = "sincicial|VVSR"
+entidade = "vsr"
+
+[[fontes.regras_entidade]]
+padrao = "hepatite B"
+entidade = "hepatite_b"
+
+[[fontes.regras_entidade]]
+padrao = "influenza"
+entidade = "influenza"
+
+[[fontes.regras_entidade]]
+padrao = "covid"
+entidade = "covid_19"
+
+[[fontes.regras_entidade]]
+padrao = "febre amarela"
+entidade = "febre_amarela"
+
+[[fontes.regras_entidade]]
+padrao = "sarampo|tr[íi]plice viral"
+entidade = "triplice_viral"
+
+[[fontes.regras_entidade]]
+padrao = "dengue"
+entidade = "dengue"
+
+[[fontes.regras_entidade]]
+padrao = "dupla adulto"
+entidade = "dupla_adulto_dt"
+
+[[fontes]]
+doc_id = "DOC-MS-NT-DTPA"
+slug = "ms-nt-119-2025"
+arquivo = "ms-nt-dtpa-gestante.pdf"
+sha256 = "fa5ca42cd11686069cc4eda3f6d35f1b379ede176c80d1a4995255a0f498eb32"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Nota Técnica nº 119/2025-CGICI/DPNI/SVSA/MS (vacinação de gestantes: VSR, dTpa e covid-19)"
+categoria = "nota_tecnica"
+jornada = "mariana"
+entidade_principal = "dtpa"
+publico_alvo = ["gestante"]
+data_publicacao = "2025-10"
+url_referencia = "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2025/nota-tecnica-no-o-119-2025-cgici-dpni-svsa-ms.pdf"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Assinada em 22/10/2025; nota mais recente do MS com a recomendação de dTpa para gestantes (1 dose a cada gestação a partir da 20ª semana), coerente com o Calendário 2026."
+secao_padrao = "esquema_vacinal"
+
+# Metodologia do painel de coberturas e conclusão genérica: fora das jornadas.
+[[fontes.regras_secao]]
+padrao = "^ASSUNTO$|M[ÉE]TODO PARA MONITORAMENTO|^CONCLUS[ÃA]O$"
+secao = "descartar"
+
+# Cada vacina abre um parágrafo ("Vacina difteria, tétano e pertussis...").
+[[fontes.regras_entidade]]
+padrao = "^Vacina v[íi]rus sincicial"
+entidade = "vsr"
+
+[[fontes.regras_entidade]]
+padrao = "^Vacina difteria, t[ée]tano e pertussis"
+entidade = "dtpa"
+
+[[fontes.regras_entidade]]
+padrao = "^Vacina Covid"
+entidade = "covid_19"
+
+[[fontes.regras_entidade]]
+padrao = "^Monitoramento da vacina[çc][ãa]o"
+entidade = "calendario_vacinal"
+
+[[fontes]]
+doc_id = "DOC-MS-NT-FEBRE-AMARELA"
+slug = "ms-nt-27-2025"
+arquivo = "ms-nt-febre-amarela.pdf"
+sha256 = "89782c4ab88cdea6fd4da72b4b5de4c65b3896f3b1483ab35ad3e935d2623ccd"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Nota Técnica Conjunta nº 27/2025-DEDT/DPNI/SVSA (febre amarela: alerta aos viajantes)"
+categoria = "nota_tecnica"
+jornada = "mariana"
+entidade_principal = "febre_amarela"
+publico_alvo = ["geral"]
+data_publicacao = "2025-02"
+url_referencia = "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2025/nota-tecnica-conjunta-no-27-2025-dedt-dpni-svsa"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Assinada em 02/02/2025; lista as contraindicações da vacina (gestantes, lactantes, imunossuprimidos). Não foi encontrada nota posterior que a revogue."
+secao_padrao = "condutas_gerais"
+
+[[fontes.regras_secao]]
+padrao = "INTENSIFICA[ÇC][ÃA]O DA VACINA"
+secao = "esquema_vacinal"
+
+# Dados epidemiológicos, vigilância de epizootias e referências: para gestores.
+[[fontes.regras_secao]]
+padrao = "^ASSUNTO$|[ÁA]reas de risco|VIGIL[ÂA]NCIA|REFER[ÊE]NCIAS"
+secao = "descartar"
+
+[[fontes]]
+doc_id = "DOC-MS-NT-VACINA-DENGUE"
+slug = "ms-nt-11-2024"
+arquivo = "ms-nt-vacina-dengue.pdf"
+sha256 = "356965cb6772151d0802cf166eee88c1d1656af5a72493b9e19f25f10bab1231"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Nota Técnica Conjunta nº 11/2024-CGICI/DPNI/SVSA/MS (vacina dengue e amamentação)"
+categoria = "nota_tecnica"
+jornada = "mariana"
+entidade_principal = "dengue"
+publico_alvo = ["lactante"]
+data_publicacao = "2024-02"
+url_referencia = "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2024/nota-tecnica-conjunta-no-11-2024-cgici-dpni-svsa-ms"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Assinada em 28/02/2024 e publicada no portal de notas técnicas do MS. Não foi encontrada nota posterior que a revogue."
+secao_padrao = "gravidez_e_lactacao"
+
+# O anexo ensina a ordenhar e estocar leite: fora do escopo de decisão clínica.
+[[fontes.regras_secao]]
+padrao = "^ASSUNTO$|^ANEXO"
+secao = "descartar"
+
+[[fontes]]
+doc_id = "DOC-ANVISA-BULA-VACINA-DENGUE"
+slug = "anvisa-bula-qdenga"
+arquivo = "anvisa-bula-vacina-dengue.pdf"
+sha256 = "78b1e4b17682edd575c76257a3685c26502b9aa6aafd2db60f1814282728e529"
+orgao_emissor = "ANVISA"
+titulo_documento = "Bula do paciente - Qdenga (vacina dengue 1, 2, 3 e 4 atenuada)"
+categoria = "bula_vacina"
+jornada = "mariana"
+entidade_principal = "dengue"
+publico_alvo = ["geral"]
+data_publicacao = "2026-08"
+url_referencia = "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=126270010"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Versão mais recente no Bulário Eletrônico; o texto informa aprovação pela Anvisa em 25/08/2026."
+detentor_registro = "Takeda Farmacêutica Brasil Ltda."
+registro_anvisa = "1.2627.0010"
+# O PDF repete a bula três vezes (uma por apresentação); só a primeira cópia
+# (páginas 1-6) é processada. O histórico de alterações começa na página 7.
+paginas = [[1, 6]]
+
+# --- Jornada do Pedro: medicamentos e condutas em dengue e malária ------------
+
+[[fontes]]
+doc_id = "DOC-ANVISA-BULA-IBUPROFENO"
+slug = "anvisa-bula-ibuprofeno"
+arquivo = "anvisa-bula-ibuprofeno.pdf"
+sha256 = "2c5df2a2e8bec11d7e68ef4c2abc356b9ca2cf848b06607ea3ee57f692764204"
+orgao_emissor = "ANVISA"
+titulo_documento = "Bula do paciente - Ibuprofeno 600 mg (cápsula gelatinosa mole)"
+categoria = "bula_medicamento"
+jornada = "pedro"
+entidade_principal = "ibuprofeno"
+publico_alvo = ["geral"]
+data_publicacao = "2024-11"
+url_referencia = "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=105350230"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Versão mais recente no Bulário Eletrônico (genérico); última alteração de texto registrada no histórico em 25/11/2024."
+detentor_registro = "Laboratório Globo S.A."
+registro_anvisa = "1.0535.0230"
+paginas = [[1, 10]]
+
+[[fontes]]
+doc_id = "DOC-ANVISA-BULA-AAS"
+slug = "anvisa-bula-aas"
+arquivo = "anvisa-bula-aas.pdf"
+sha256 = "543a0ca097a941701d6ccf7e7f64b3111ecea9f74431fb005964c5bb7e50e742"
+orgao_emissor = "ANVISA"
+titulo_documento = "Bula do paciente - Ácido acetilsalicílico 100 mg (comprimido revestido)"
+categoria = "bula_medicamento"
+jornada = "pedro"
+entidade_principal = "acido_acetilsalicilico"
+publico_alvo = ["geral"]
+data_publicacao = "2026-08"
+url_referencia = "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=100431468"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Versão mais recente no Bulário Eletrônico (genérico); atualizada conforme Bula Padrão aprovada pela Anvisa em 24/08/2026."
+detentor_registro = "Eurofarma Laboratórios S.A."
+registro_anvisa = "1.0043.1468"
+paginas = [[1, 9]]
+
+[[fontes]]
+doc_id = "DOC-ANVISA-BULA-DIPIRONA"
+slug = "anvisa-bula-dipirona"
+arquivo = "anvisa-bula-dipirona.pdf"
+sha256 = "771150e26859a07e9d0ad6a5d460bda5c4b3032541d6873a1666027768951d33"
+orgao_emissor = "ANVISA"
+titulo_documento = "Bula do paciente - Dipirona monoidratada 50 mg/mL (solução oral)"
+categoria = "bula_medicamento"
+jornada = "pedro"
+entidade_principal = "dipirona"
+publico_alvo = ["geral"]
+data_publicacao = "2026-01"
+url_referencia = "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=183260244"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Versão mais recente no Bulário Eletrônico; atualizada conforme Bula Padrão aprovada pela Anvisa em 16/01/2026."
+detentor_registro = "Sanofi Medley Farmacêutica Ltda."
+registro_anvisa = "1.8326.0244"
+paginas = [[1, 9]]
+
+[[fontes]]
+doc_id = "DOC-ANVISA-BULA-PARACETAMOL"
+slug = "anvisa-bula-paracetamol"
+arquivo = "anvisa-bula-paracetamol.pdf"
+sha256 = "b19f22013399426b256ff1df083d3c56aeeccc261b06b8df04911713a67d6508"
+orgao_emissor = "ANVISA"
+titulo_documento = "Bula do paciente - Tylenol (paracetamol) 500 mg e 750 mg (comprimido revestido)"
+categoria = "bula_medicamento"
+jornada = "pedro"
+entidade_principal = "paracetamol"
+publico_alvo = ["geral"]
+data_publicacao = "2024-04"
+url_referencia = "https://consultas.anvisa.gov.br/#/bulario/q/?numeroRegistro=157211214"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "Medicamento de referência do paracetamol isolado; versão publicada no Bulário Eletrônico, com última alteração de texto registrada no histórico em 11/04/2024."
+detentor_registro = "Johnson & Johnson Industrial Ltda."
+registro_anvisa = "1.5721.1214"
+# Bula do paciente nas páginas 1-6; o histórico de alterações começa na página 7.
+paginas = [[1, 6]]
+
+[[fontes]]
+doc_id = "DOC-MS-PROTOCOLO-DENGUE"
+slug = "ms-dengue-6ed"
+arquivo = "ms-protocolo-dengue-6ed.pdf"
+sha256 = "2dcb72fb9ebb48efcb473d4b5fd14cf93461a009c628be0671dc064f93ea8998"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Dengue: diagnóstico e manejo clínico - adulto e criança (6ª edição, 2024)"
+categoria = "protocolo_clinico"
+jornada = "pedro"
+entidade_principal = "dengue"
+publico_alvo = ["geral", "pacientes_com_dengue"]
+data_publicacao = "2024"
+url_referencia = "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/dengue/dengue-diagnostico-e-manejo-clinico-adulto-e-crianca"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "6ª edição (2024), a edição publicada no portal do MS na data da coleta."
+# Página impressa N = página N+1 do PDF. Capítulos 2 a 11 (espectro clínico,
+# atendimento, estadiamento e conduta, gestação, antiagregantes) e o
+# Apêndice H (uso de medicamentos para dengue). Ficam de fora apresentação,
+# introdução, referências e os demais apêndices.
+paginas = [[12, 64], [78, 78]]
+secao_padrao = "manejo_clinico"
+
+# As regras são testadas do título mais interno ao mais geral; vale a primeira.
+[[fontes.regras_secao]]
+padrao = "sinais de alarme|dengue grave"
+secao = "sinais_de_alarme"
+
+[[fontes.regras_secao]]
+padrao = "classifica[çc][ãa]o (dos casos|de risco)"
+secao = "condutas_gerais"
+
+# Conteúdo de uso exclusivamente hospitalar ou diagnóstico, fora das jornadas.
+[[fontes.regras_secao]]
+padrao = "diagn[óo]stico diferencial|anamnese|exame f[íi]sico|corre[çc][ãa]o espec[íi]fica|dist[úu]rbios de coagula|[óo]bito por dengue|crit[ée]rios de alta|hipertens[ãa]o arterial|cardiopatas|anticoagulantes|varfarina|antifator"
+secao = "descartar"
+
+[[fontes]]
+doc_id = "DOC-MS-GUIA-MALARIA"
+slug = "ms-malaria-3ed"
+arquivo = "ms-guia-malaria-3ed.pdf"
+sha256 = "b941a38f19f1b800f5fd0d31e43d7e3e09f10437a35b324e8b1c1325d181ac50"
+orgao_emissor = "MINISTERIO_DA_SAUDE"
+titulo_documento = "Guia de tratamento da malária no Brasil (3ª edição)"
+categoria = "protocolo_clinico"
+jornada = "pedro"
+entidade_principal = "malaria"
+publico_alvo = ["geral", "pacientes_com_malaria"]
+data_publicacao = "2026"
+url_referencia = "https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2026/guia-de-tratamento-da-malaria-no-brasil-3a-edicao.pdf"
+data_coleta = 2026-11-25
+data_verificacao_vigencia = 2026-11-25
+situacao_vigencia = "vigente"
+evidencia_vigencia = "3ª edição (2026), a edição mais recente publicada no portal do MS."
+# Página impressa N = página N+1 do PDF. Da seção 2.3 (manifestações clínicas)
+# até o fim do capítulo 5 (perguntas frequentes). Ficam de fora a situação
+# epidemiológica, o ciclo biológico, as referências e a equipe técnica.
+paginas = [[21, 74]]
+secao_padrao = "manejo_clinico"
+
+# As regras são testadas do título mais interno ao mais geral; vale a primeira.
+[[fontes.regras_secao]]
+padrao = "esquemas recomendados"
+secao = "manejo_clinico"
+
+[[fontes.regras_secao]]
+padrao = "(?<!não )complicada|grave"
+secao = "sinais_de_alarme"
+
+[[fontes.regras_secao]]
+padrao = "eventos adversos"
+secao = "advertencias_e_precaucoes"
+
+[[fontes.regras_secao]]
+padrao = "profilaxia|preven[çc][ãa]o"
+secao = "condutas_gerais"
+
+# Diagnóstico laboratorial, logística farmacêutica e controle de cura por
+# lâmina: conteúdo para profissionais, fora das jornadas.
+[[fontes.regras_secao]]
+padrao = "^2\\.4|diagn[óo]stico microsc|testes diagn[óo]sticos|t[ée]cnicas moleculares|componentes estrat[ée]gicos|prescri[çc][ãa]o e a dispensa|armazenamento|controle de cura"
+secao = "descartar"

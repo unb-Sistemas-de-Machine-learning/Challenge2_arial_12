@@ -10,6 +10,9 @@
   * [ADR-001: Arquitetura MLOps sob Custo Zero](/arquitetura/adr-001-arquitetura-mlops-mvp.md)
   * [Contrato JSON e Metadados do RAG](/arquitetura/contrato-json-e-metadados-rag.md)
 
+* **Dados**
+  * [Data Card do Corpus Oficial](/data_card.md)
+
 * **Agentes**
   * [Prompts e Schemas dos Agentes](/agentes/prompts-e-schemas.md)
 

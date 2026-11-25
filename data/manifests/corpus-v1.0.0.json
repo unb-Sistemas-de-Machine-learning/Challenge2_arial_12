@@ -1,0 +1,259 @@
+{
+  "versao_corpus": "corpus-v1.0.0",
+  "parcial": false,
+  "hash_corpus": "ccc6c2f4f1b0476906cda8486089143fc6bfe8d138b13133049054f55b5dc519",
+  "hash_chunks": "033882fe02ed5d2e1a0df00d96a81ac7f3960552bb8006d6bf139ae24662d0bd",
+  "hash_indice": "b6a9f440ca14b1ac7a0eed88c1cc74a6f9a31fb614e5df476eb3bf3991af1271",
+  "gerado_em": "2026-11-25T18:41:53Z",
+  "git": {
+    "commit": "5668167f2a6aefacccd46ba471f3da627bf95fd5",
+    "alteracoes_nao_commitadas": true
+  },
+  "comando": "python -m src.rag.ingestao",
+  "parametros_chunking": {
+    "alvo_caracteres": 1000,
+    "maximo_caracteres": 1500,
+    "min_caracteres_uteis": 30,
+    "fronteira": "secao_e_titulo",
+    "texto_embedding": "titulo_documento + secao + titulo_secao + trecho"
+  },
+  "modelo_embedding": {
+    "nome": "intfloat/multilingual-e5-large",
+    "dimensao": 1024,
+    "prefixo_passagem": "passage: ",
+    "prefixo_consulta": "query: "
+  },
+  "base_vetorial": {
+    "motor": "chromadb",
+    "colecao": "evidencia_corpus",
+    "distancia": "cosine",
+    "caminho": "data/vectorstore"
+  },
+  "bibliotecas": {
+    "chromadb": "1.5.9",
+    "pymupdf": "2.1",
+    "fastembed": "0.9.1",
+    "pydantic": "2.14.4"
+  },
+  "contagens": {
+    "chunks": 383,
+    "por_categoria": {
+      "bula_medicamento": 72,
+      "bula_vacina": 11,
+      "calendario_vacinal": 134,
+      "nota_tecnica": 22,
+      "protocolo_clinico": 144
+    },
+    "por_secao": {
+      "advertencias_e_precaucoes": 78,
+      "condutas_gerais": 38,
+      "contraindicacoes": 30,
+      "esquema_vacinal": 75,
+      "gravidez_e_lactacao": 13,
+      "indicacoes": 15,
+      "interacoes_medicamentosas": 13,
+      "manejo_clinico": 108,
+      "sinais_de_alarme": 13
+    }
+  },
+  "fontes": [
+    {
+      "doc_id": "DOC-MS-CALENDARIO-2026",
+      "arquivo": "ms-calendario-vacinacao-2026.pdf",
+      "sha256": "3395abd5bc0659aec19149a3f6df815ceeebb58f81ebbc125e73daba3f290fc8",
+      "paginas": [
+        [
+          2,
+          8
+        ],
+        [
+          25,
+          35
+        ],
+        [
+          37,
+          39
+        ],
+        [
+          50,
+          60
+        ]
+      ],
+      "chunks": 134,
+      "por_secao": {
+        "advertencias_e_precaucoes": 28,
+        "condutas_gerais": 19,
+        "contraindicacoes": 14,
+        "esquema_vacinal": 64,
+        "indicacoes": 9
+      }
+    },
+    {
+      "doc_id": "DOC-MS-NT-DTPA",
+      "arquivo": "ms-nt-dtpa-gestante.pdf",
+      "sha256": "fa5ca42cd11686069cc4eda3f6d35f1b379ede176c80d1a4995255a0f498eb32",
+      "paginas": null,
+      "chunks": 5,
+      "por_secao": {
+        "esquema_vacinal": 5
+      }
+    },
+    {
+      "doc_id": "DOC-MS-NT-FEBRE-AMARELA",
+      "arquivo": "ms-nt-febre-amarela.pdf",
+      "sha256": "89782c4ab88cdea6fd4da72b4b5de4c65b3896f3b1483ab35ad3e935d2623ccd",
+      "paginas": null,
+      "chunks": 11,
+      "por_secao": {
+        "condutas_gerais": 4,
+        "contraindicacoes": 1,
+        "esquema_vacinal": 6
+      }
+    },
+    {
+      "doc_id": "DOC-MS-NT-VACINA-DENGUE",
+      "arquivo": "ms-nt-vacina-dengue.pdf",
+      "sha256": "356965cb6772151d0802cf166eee88c1d1656af5a72493b9e19f25f10bab1231",
+      "paginas": null,
+      "chunks": 6,
+      "por_secao": {
+        "contraindicacoes": 1,
+        "gravidez_e_lactacao": 5
+      }
+    },
+    {
+      "doc_id": "DOC-ANVISA-BULA-VACINA-DENGUE",
+      "arquivo": "anvisa-bula-vacina-dengue.pdf",
+      "sha256": "78b1e4b17682edd575c76257a3685c26502b9aa6aafd2db60f1814282728e529",
+      "paginas": [
+        [
+          1,
+          6
+        ]
+      ],
+      "chunks": 11,
+      "por_secao": {
+        "advertencias_e_precaucoes": 8,
+        "contraindicacoes": 1,
+        "gravidez_e_lactacao": 1,
+        "indicacoes": 1
+      }
+    },
+    {
+      "doc_id": "DOC-ANVISA-BULA-IBUPROFENO",
+      "arquivo": "anvisa-bula-ibuprofeno.pdf",
+      "sha256": "2c5df2a2e8bec11d7e68ef4c2abc356b9ca2cf848b06607ea3ee57f692764204",
+      "paginas": [
+        [
+          1,
+          10
+        ]
+      ],
+      "chunks": 27,
+      "por_secao": {
+        "advertencias_e_precaucoes": 17,
+        "contraindicacoes": 2,
+        "gravidez_e_lactacao": 2,
+        "indicacoes": 1,
+        "interacoes_medicamentosas": 5
+      }
+    },
+    {
+      "doc_id": "DOC-ANVISA-BULA-AAS",
+      "arquivo": "anvisa-bula-aas.pdf",
+      "sha256": "543a0ca097a941701d6ccf7e7f64b3111ecea9f74431fb005964c5bb7e50e742",
+      "paginas": [
+        [
+          1,
+          9
+        ]
+      ],
+      "chunks": 18,
+      "por_secao": {
+        "advertencias_e_precaucoes": 6,
+        "contraindicacoes": 2,
+        "gravidez_e_lactacao": 3,
+        "indicacoes": 2,
+        "interacoes_medicamentosas": 5
+      }
+    },
+    {
+      "doc_id": "DOC-ANVISA-BULA-DIPIRONA",
+      "arquivo": "anvisa-bula-dipirona.pdf",
+      "sha256": "771150e26859a07e9d0ad6a5d460bda5c4b3032541d6873a1666027768951d33",
+      "paginas": [
+        [
+          1,
+          9
+        ]
+      ],
+      "chunks": 21,
+      "por_secao": {
+        "advertencias_e_precaucoes": 13,
+        "contraindicacoes": 3,
+        "gravidez_e_lactacao": 1,
+        "indicacoes": 1,
+        "interacoes_medicamentosas": 3
+      }
+    },
+    {
+      "doc_id": "DOC-ANVISA-BULA-PARACETAMOL",
+      "arquivo": "anvisa-bula-paracetamol.pdf",
+      "sha256": "b19f22013399426b256ff1df083d3c56aeeccc261b06b8df04911713a67d6508",
+      "paginas": [
+        [
+          1,
+          6
+        ]
+      ],
+      "chunks": 6,
+      "por_secao": {
+        "advertencias_e_precaucoes": 3,
+        "contraindicacoes": 1,
+        "gravidez_e_lactacao": 1,
+        "indicacoes": 1
+      }
+    },
+    {
+      "doc_id": "DOC-MS-PROTOCOLO-DENGUE",
+      "arquivo": "ms-protocolo-dengue-6ed.pdf",
+      "sha256": "2dcb72fb9ebb48efcb473d4b5fd14cf93461a009c628be0671dc064f93ea8998",
+      "paginas": [
+        [
+          12,
+          64
+        ],
+        [
+          78,
+          78
+        ]
+      ],
+      "chunks": 57,
+      "por_secao": {
+        "condutas_gerais": 6,
+        "contraindicacoes": 1,
+        "manejo_clinico": 40,
+        "sinais_de_alarme": 10
+      }
+    },
+    {
+      "doc_id": "DOC-MS-GUIA-MALARIA",
+      "arquivo": "ms-guia-malaria-3ed.pdf",
+      "sha256": "b941a38f19f1b800f5fd0d31e43d7e3e09f10437a35b324e8b1c1325d181ac50",
+      "paginas": [
+        [
+          21,
+          74
+        ]
+      ],
+      "chunks": 87,
+      "por_secao": {
+        "advertencias_e_precaucoes": 3,
+        "condutas_gerais": 9,
+        "contraindicacoes": 4,
+        "manejo_clinico": 68,
+        "sinais_de_alarme": 3
+      }
+    }
+  ]
+}
