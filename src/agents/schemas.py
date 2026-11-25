@@ -248,6 +248,42 @@ class SaidaEstruturadorRoteador(_Modelo):
         return self
 
 
+# --- Contrato repassado aos especialistas (issue #13) ------------------------
+
+
+class ExecucaoRoteamento(_Modelo):
+    """Log de execução do Agente Estruturador/Roteador (sem dados pessoais)."""
+
+    modelo_llm: str
+    versao_prompt: str
+    latencia_ms: int = Field(ge=0)
+    tentativas_llm: int = Field(ge=0)
+    fallback_seguranca: bool = Field(
+        description="true quando o agente não obteve saída válida do LLM e "
+        "devolveu o roteamento fail-safe."
+    )
+
+
+class ContratoRoteado(_Modelo):
+    """Entrada validada + roteamento: o que os especialistas recebem.
+
+    Junta o perfil, as vacinas tomadas e o relato (``entrada``) com as vacinas
+    questionadas, os sintomas, a suspeita clínica, o medicamento e a rota
+    (``roteamento``) em um único JSON validado.
+    """
+
+    request_id: str
+    entrada: EntradaConsulta
+    roteamento: SaidaEstruturadorRoteador
+    execucao: ExecucaoRoteamento
+
+    @model_validator(mode="after")
+    def _ids_iguais(self) -> ContratoRoteado:
+        if self.roteamento.request_id != self.request_id:
+            raise ValueError("roteamento.request_id difere do request_id do contrato.")
+        return self
+
+
 # --- Envelope dos agentes especialistas (Seção 4.2) -------------------------
 
 
